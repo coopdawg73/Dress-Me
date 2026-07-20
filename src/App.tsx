@@ -1,8 +1,10 @@
+import { StartScreen } from './ui/StartScreen'
+
 export default function App() {
   return (
     <div className="app-shell">
       <main style={{ flex: 1 }}>
-        <h1 className="display">THE <span style={{ color: 'var(--gold)' }}>EDIT</span></h1>
+        <StartScreen onStartDaily={() => {}} onStartAtelier={() => {}} />
       </main>
       <footer className="app-footer">by Remark</footer>
     </div>
