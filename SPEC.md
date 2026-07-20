@@ -245,7 +245,7 @@ type Item = {
 };
 ```
 
-### 6.3 Full item catalogue (starter set — 38 pieces)
+### 6.3 Full item catalogue (starter set — 40 pieces)
 
 **Dresses** (`tmpl` ∈ gown/cocktail/slip/midi): Midnight Gown (gown, black, F5, glam), Ivory Column (gown, ivory, F5, classic), Emerald Slip (slip, emerald, F4, romantic, ★), Rouge Cocktail (cocktail, burgundy, F4, glam), Camel Knit Midi (midi, camel, F2, minimal), Blush Slip Dress (slip, blush, F3, romantic), Navy Midi (midi, navy, F3, classic), Noir Cocktail (cocktail, black, F4, classic).
 
