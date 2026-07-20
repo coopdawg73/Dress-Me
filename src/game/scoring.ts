@@ -22,7 +22,7 @@ const SLOT_WEIGHTS: Record<Slot, number> = {
 
 const ADJACENCY: Record<Archetype, Archetype[]> = {
   classic: ['minimal', 'romantic'],
-  minimal: ['classic', 'relaxed'],
+  minimal: ['classic', 'relaxed', 'edgy'],
   romantic: ['classic', 'glam'],
   glam: ['romantic', 'edgy'],
   edgy: ['glam', 'minimal'],

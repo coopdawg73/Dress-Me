@@ -17,6 +17,10 @@ describe('matchVal', () => {
   it('scores 0 for an unrelated archetype', () => {
     expect(matchVal('relaxed', ['glam', 'classic'])).toBe(0)
   })
+  it('is symmetric: minimal is adjacent to edgy in both directions', () => {
+    expect(matchVal('minimal', ['edgy'])).toBe(0.5)
+    expect(matchVal('edgy', ['minimal'])).toBe(0.5)
+  })
 })
 
 describe('computeScore golden cases (SPEC.md §10)', () => {
