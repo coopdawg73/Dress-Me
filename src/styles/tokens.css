@@ -1,0 +1,14 @@
+:root {
+  --bg: #141210;
+  --bg2: #0f0d0b;
+  --panel: #1D1A15;
+  --panel2: #26221B;
+  --line: #3A342B;
+  --gold: #C9A24B;
+  --gold-soft: #E0C58C;
+  --text: #EDE6D8;
+  --muted: #9A9081;
+  --bad: #C07A6E;
+  --good: #8FB08A;
+  --shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
