@@ -127,7 +127,7 @@ vibe = 250 × ( Σ matchVal(item.arche, brief.vibes) / items.length )
 
 ```
 classic ── minimal, romantic
-minimal ── classic, relaxed
+minimal ── classic, relaxed, edgy
 romantic ── classic, glam
 glam ── romantic, edgy
 edgy ── glam, minimal
