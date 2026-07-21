@@ -27,7 +27,7 @@ export function GameBoard() {
   return (
     <div>
       <Masthead score={totalScore} streak={streak} roundLabel={roundLabel} livesOrLook={livesOrLook} onExit={exitToStart} />
-      <div style={{ display: 'flex', gap: '2rem', padding: '2rem' }}>
+      <div className="board-columns">
         <div style={{ flex: 1 }}>
           <Figure equipped={equipped} />
           <p className="micro-label" style={{ textAlign: 'center' }}>Styling {brief.name}.</p>

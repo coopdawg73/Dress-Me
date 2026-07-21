@@ -42,3 +42,20 @@ h1, h2, h3, .display {
   font-size: 0.75rem;
   color: var(--muted);
 }
+
+.board-columns {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+@media (max-width: 720px) {
+  .board-columns {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .mode-cards {
+    flex-direction: column !important;
+  }
+}

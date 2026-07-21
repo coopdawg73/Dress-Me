@@ -22,7 +22,7 @@ export function StartScreen({ onStartDaily, onStartAtelier }: StartScreenProps) 
         Style the <em>moment</em>.
       </h1>
 
-      <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '2rem' }}>
+      <div className="mode-cards" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '2rem' }}>
         <section style={{ border: '1px solid var(--line)', padding: '1.5rem', borderRadius: 8, flex: 1 }}>
           <h2 className="display">The Daily Muse</h2>
           <p className="micro-label">5 seeded briefs, same for everyone today</p>
