@@ -28,9 +28,10 @@ export function GameBoard() {
     <div>
       <Masthead score={totalScore} streak={streak} roundLabel={roundLabel} livesOrLook={livesOrLook} onExit={exitToStart} />
       <div className="board-columns">
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, position: 'relative' }}>
           <Figure equipped={equipped} />
           <p className="micro-label" style={{ textAlign: 'center' }}>Styling {brief.name}.</p>
+          {streak > 0 && <div key={streak} className="streak-flourish">×{(1 + 0.25 * Math.min(streak, 8)).toFixed(2)}</div>}
         </div>
         <div style={{ flex: 1 }}>
           <BriefCard brief={brief} timeLeft={timeLeft} maxTime={maxTime} />

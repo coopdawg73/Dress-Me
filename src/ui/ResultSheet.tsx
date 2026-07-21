@@ -25,7 +25,7 @@ export function ResultSheet() {
 
   return (
     <div role="dialog" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: 'var(--panel)', padding: '2rem', maxWidth: 480, boxShadow: 'var(--shadow)' }}>
+      <div className="screen-enter" style={{ background: 'var(--panel)', padding: '2rem', maxWidth: 480, boxShadow: 'var(--shadow)' }}>
         <h2 className="display" style={{ color: GRADE_COLOR[score.grade] }}>{score.grade}</h2>
         <p style={{ fontStyle: 'italic' }}>— Camille: "{critiqueLine}"</p>
         {BARS.map(({ key, label, max }) => (
