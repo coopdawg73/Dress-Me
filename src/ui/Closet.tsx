@@ -12,7 +12,7 @@ type ClosetProps = {
   onUnequip: (slot: Slot) => void
 }
 
-function coverageHint(equipped: Partial<Record<Slot, Item>>): string | null {
+export function coverageHint(equipped: Partial<Record<Slot, Item>>): string | null {
   const hasDress = Boolean(equipped.dress)
   const hasTopBottom = Boolean(equipped.top) && Boolean(equipped.bottom)
   const missing: string[] = []

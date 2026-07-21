@@ -5,6 +5,10 @@ import { PALETTE } from './data/palette'
 
 export type Grade = 'Impeccable' | 'Refined' | 'Considered' | 'Passable' | 'Faux Pas'
 
+export const OCCASION_MAX = 300
+export const COHERENCE_MAX = 250
+export const VIBE_MAX = 250
+
 export type ScoreBreakdown = {
   occasion: number
   coherence: number
@@ -45,17 +49,17 @@ function computeOccasion(items: Item[], target: number): number {
   }
   if (weightTotal === 0) return 0
   const lookF = weightedSum / weightTotal
-  return 300 * Math.max(0, 1 - Math.abs(lookF - target) / 2.2)
+  return OCCASION_MAX * Math.max(0, 1 - Math.abs(lookF - target) / 2.2)
 }
 
 function computeVibe(items: Item[], vibes: Archetype[]): number {
   if (items.length === 0) return 0
   const sum = items.reduce((acc, it) => acc + matchVal(it.arche, vibes), 0)
-  return 250 * (sum / items.length)
+  return VIBE_MAX * (sum / items.length)
 }
 
 function computeCoherence(items: Item[]): number {
-  let score = 250
+  let score = COHERENCE_MAX
   const nonNeutral = items.filter(it => !PALETTE[it.color].neutral)
   const hasWarm = nonNeutral.some(it => PALETTE[it.color].warmCool === 'warm')
   const hasCool = nonNeutral.some(it => PALETTE[it.color].warmCool === 'cool')
@@ -70,7 +74,7 @@ function computeCoherence(items: Item[]): number {
 
   if (families.size <= 1 && nonNeutral.length >= 2) score += 25
 
-  return Math.min(250, Math.max(0, score))
+  return Math.min(COHERENCE_MAX, Math.max(0, score))
 }
 
 function computeFlair(items: Item[], brief: Brief): number {
@@ -81,6 +85,10 @@ function computeFlair(items: Item[], brief: Brief): number {
   if (statements.length === 1) return matched.length > 0 ? 100 : 70
   if (statements.length === 2) return matched.length > 0 ? 76 : 52
   return 30
+}
+
+export function multiplierFor(streak: number): number {
+  return Math.min(3, 1 + 0.25 * streak)
 }
 
 function gradeFor(percent: number): Grade {
@@ -121,7 +129,7 @@ export function computeScore(
 
   const percent = Math.round((subtotal / 900) * 100)
   const tempo = Math.round((Math.max(0, timeLeft) / maxTime) * 100)
-  const multiplier = Math.min(3, 1 + 0.25 * streak)
+  const multiplier = multiplierFor(streak)
   const roundScore = Math.round((subtotal + tempo) * multiplier)
 
   return { occasion, coherence, vibe, flair, tempo, percent, roundScore, grade: gradeFor(percent) }

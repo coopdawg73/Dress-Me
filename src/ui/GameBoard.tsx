@@ -1,9 +1,10 @@
 // src/ui/GameBoard.tsx
 import { useEffect } from 'react'
 import { useGameStore } from '../game/state'
+import { multiplierFor } from '../game/scoring'
 import { Figure } from '../render/Figure'
 import { BriefCard } from './BriefCard'
-import { Closet } from './Closet'
+import { Closet, coverageHint } from './Closet'
 import { Masthead } from './Masthead'
 
 export function GameBoard() {
@@ -23,6 +24,7 @@ export function GameBoard() {
 
   const roundLabel = mode === 'daily' ? `Look ${briefIndex + 1}/${briefQueue.length}` : undefined
   const livesOrLook = mode === 'atelier' ? '◆'.repeat(lives) : undefined
+  const incomplete = coverageHint(equipped) !== null
 
   return (
     <div>
@@ -31,12 +33,12 @@ export function GameBoard() {
         <div style={{ flex: 1, position: 'relative' }}>
           <Figure equipped={equipped} />
           <p className="micro-label" style={{ textAlign: 'center' }}>Styling {brief.name}.</p>
-          {streak > 0 && <div key={streak} className="streak-flourish">×{(1 + 0.25 * Math.min(streak, 8)).toFixed(2)}</div>}
+          {streak > 0 && <div key={streak} className="streak-flourish">×{multiplierFor(streak).toFixed(2)}</div>}
         </div>
         <div style={{ flex: 1 }}>
           <BriefCard brief={brief} timeLeft={timeLeft} maxTime={maxTime} />
           <Closet equipped={equipped} onEquip={equip} onUnequip={unequip} />
-          <button onClick={presentLook}>Present the Look</button>
+          <button onClick={presentLook} disabled={incomplete}>Present the Look</button>
         </div>
       </div>
     </div>

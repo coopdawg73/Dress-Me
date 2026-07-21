@@ -1,4 +1,6 @@
 // src/ui/Masthead.tsx
+import { multiplierFor } from '../game/scoring'
+
 type MastheadProps = {
   score?: number
   streak?: number
@@ -20,7 +22,7 @@ export function Masthead({ score, streak, roundLabel, livesOrLook, onExit }: Mas
       {score !== undefined && (
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }} className="micro-label">
           <span>Score {score}</span>
-          {streak !== undefined && streak > 0 && <span style={{ color: 'var(--gold)' }}>×{(1 + 0.25 * streak).toFixed(2)}</span>}
+          {streak !== undefined && streak > 0 && <span style={{ color: 'var(--gold)' }}>×{multiplierFor(streak).toFixed(2)}</span>}
           {roundLabel && <span>{roundLabel}</span>}
           {livesOrLook && <span>{livesOrLook}</span>}
           {onExit && <button onClick={onExit}>Exit</button>}

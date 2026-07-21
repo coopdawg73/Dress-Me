@@ -108,11 +108,10 @@ export const useGameStore = create<GameState>((set, get) => ({
   tick: () => {
     const state = get()
     const timeLeft = Math.max(0, state.timeLeft - 1)
+    set({ timeLeft })
     if (timeLeft === 0 && state.screen === 'playing') {
       get().presentLook()
-      return
     }
-    set({ timeLeft })
   },
 
   presentLook: () => set((state) => {

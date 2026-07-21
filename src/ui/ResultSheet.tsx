@@ -1,5 +1,6 @@
 // src/ui/ResultSheet.tsx
 import { useGameStore } from '../game/state'
+import type { Grade } from '../game/scoring'
 
 const BARS: Array<{ key: 'occasion' | 'coherence' | 'vibe' | 'flair' | 'tempo'; label: string; max: number }> = [
   { key: 'occasion', label: 'Occasion', max: 300 },
@@ -9,7 +10,7 @@ const BARS: Array<{ key: 'occasion' | 'coherence' | 'vibe' | 'flair' | 'tempo'; 
   { key: 'tempo', label: 'Tempo', max: 100 },
 ]
 
-const GRADE_COLOR: Record<string, string> = {
+const GRADE_COLOR: Record<Grade, string> = {
   Impeccable: 'var(--good)',
   Refined: 'var(--good)',
   Considered: 'var(--gold)',

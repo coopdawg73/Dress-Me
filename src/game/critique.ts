@@ -2,6 +2,7 @@
 import type { Item, Slot } from './data/items'
 import type { Brief } from './data/briefs'
 import type { ScoreBreakdown } from './scoring'
+import { OCCASION_MAX, COHERENCE_MAX, VIBE_MAX } from './scoring'
 
 export const PRAISE_LINES = [
   "It's exactly right — nothing to add, nothing to take away.",
@@ -31,9 +32,9 @@ export function critique(
   }
 
   const normalized: Record<'occasion' | 'coherence' | 'vibe', number> = {
-    occasion: score.occasion / 300,
-    coherence: score.coherence / 250,
-    vibe: score.vibe / 250,
+    occasion: score.occasion / OCCASION_MAX,
+    coherence: score.coherence / COHERENCE_MAX,
+    vibe: score.vibe / VIBE_MAX,
   }
   const weakest = (Object.keys(normalized) as Array<keyof typeof normalized>)
     .reduce((a, b) => (normalized[a] <= normalized[b] ? a : b))
