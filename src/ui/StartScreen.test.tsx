@@ -25,3 +25,12 @@ describe('StartScreen', () => {
     expect(screen.getByText(/read the brief/i)).toBeInTheDocument()
   })
 })
+
+vi.mock('../leaderboard/client', () => ({
+  getScores: vi.fn(async () => [{ name: 'Ana', score: 4200, ts: 0 }]),
+}))
+
+it('shows the top all-time endless score once loaded', async () => {
+  render(<StartScreen onStartDaily={() => {}} onStartAtelier={() => {}} />)
+  expect(await screen.findByText(/Ana.*4200|4200.*Ana/i)).toBeInTheDocument()
+})

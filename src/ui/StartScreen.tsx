@@ -1,11 +1,21 @@
 // src/ui/StartScreen.tsx
+import { useEffect, useState } from 'react'
+import { getScores } from '../leaderboard/client'
+
 type StartScreenProps = {
   onStartDaily: () => void
   onStartAtelier: () => void
-  bestScoresLine?: string
 }
 
-export function StartScreen({ onStartDaily, onStartAtelier, bestScoresLine }: StartScreenProps) {
+export function StartScreen({ onStartDaily, onStartAtelier }: StartScreenProps) {
+  const [bestLine, setBestLine] = useState<string | null>(null)
+
+  useEffect(() => {
+    getScores('endless').then((scores) => {
+      if (scores.length > 0) setBestLine(`Best in the Atelier: ${scores[0].name} — ${scores[0].score}`)
+    }).catch(() => {})
+  }, [])
+
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '3rem 2rem', textAlign: 'center' }}>
       <h1 className="display" style={{ fontSize: '3rem' }}>
@@ -33,7 +43,7 @@ export function StartScreen({ onStartDaily, onStartAtelier, bestScoresLine }: St
         <li>Present the look before the timer runs out.</li>
       </ol>
 
-      {bestScoresLine && <p className="micro-label">{bestScoresLine}</p>}
+      {bestLine && <p className="micro-label">{bestLine}</p>}
     </div>
   )
 }
