@@ -1,5 +1,6 @@
 import { StartScreen } from './ui/StartScreen'
 import { GameBoard } from './ui/GameBoard'
+import { ResultSheet } from './ui/ResultSheet'
 import { useGameStore } from './game/state'
 
 export default function App() {
@@ -9,7 +10,8 @@ export default function App() {
     <div className="app-shell">
       <main style={{ flex: 1 }}>
         {screen === 'start' && <StartScreen onStartDaily={startDaily} onStartAtelier={startAtelier} />}
-        {screen === 'playing' && <GameBoard />}
+        {(screen === 'playing' || screen === 'result') && <GameBoard />}
+        {screen === 'result' && <ResultSheet />}
       </main>
       <footer className="app-footer">by Remark</footer>
     </div>

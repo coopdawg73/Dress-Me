@@ -3,6 +3,8 @@ import type { Item, Slot } from './data/items'
 import type { Brief } from './data/briefs'
 import { BRIEFS } from './data/briefs'
 import { pickDailyBriefs } from './rng'
+import { computeScore, type ScoreBreakdown } from './scoring'
+import { critique } from './critique'
 
 export type Mode = 'daily' | 'atelier'
 export type Screen = 'start' | 'playing' | 'result' | 'gameover'
@@ -36,7 +38,7 @@ type GameState = {
   lives: number
   timeLeft: number
   maxTime: number
-  lastResult: unknown | null
+  lastResult: { score: ScoreBreakdown; critiqueLine: string } | null
 
   startDaily: () => void
   startAtelier: () => void
@@ -113,8 +115,20 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({ timeLeft })
   },
 
-  // Replaced in Task 15 once scoring.ts exists.
-  presentLook: () => set({ screen: 'result' }),
+  presentLook: () => set((state) => {
+    const brief = state.briefQueue[state.briefIndex]
+    const score = computeScore(state.equipped, brief, state.timeLeft, state.maxTime, state.streak)
+    const critiqueLine = critique(state.equipped, brief, score)
+    const streak = score.percent >= 75 ? state.streak + 1 : 0
+    const lives = (score.grade === 'Faux Pas' && state.mode === 'atelier') ? state.lives - 1 : state.lives
+    return {
+      screen: 'result',
+      lastResult: { score, critiqueLine },
+      totalScore: state.totalScore + score.roundScore,
+      streak,
+      lives,
+    }
+  }),
 
   nextRound: () => set((state) => {
     const isLastDailyRound = state.mode === 'daily' && state.briefIndex + 1 >= state.briefQueue.length

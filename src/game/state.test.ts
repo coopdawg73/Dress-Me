@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from './state'
 import { ITEMS } from './data/items'
+import { BRIEFS } from './data/briefs'
 
 const gown = ITEMS.find(i => i.name === 'Midnight Gown')!
 const top = ITEMS.find(i => i.name === 'White Tee')!
@@ -65,5 +66,39 @@ describe('startAtelier', () => {
     expect(s.lives).toBe(3)
     expect(s.timeLeft).toBe(46)
     expect(s.maxTime).toBe(46)
+  })
+})
+
+describe('presentLook (scored)', () => {
+  it('extends the streak on a Refined-or-better look and resets it otherwise', () => {
+    // Pin the brief queue to Céline directly rather than calling startDaily(),
+    // whose seeded brief pick depends on today's real calendar date (see rng.ts) -
+    // asserting a specific score/grade against a date-varying brief would make
+    // this test flake depending on which day it runs.
+    useGameStore.setState({
+      screen: 'playing', mode: 'daily',
+      briefQueue: [BRIEFS.find(b => b.id === 'celine')!], briefIndex: 0,
+      equipped: {}, totalScore: 0, streak: 0, lives: 3,
+      timeLeft: 40, maxTime: 40, lastResult: null,
+    })
+    useGameStore.getState().equip(ITEMS.find(i => i.name === 'Midnight Gown')!)
+    useGameStore.getState().equip(ITEMS.find(i => i.name === 'Black Stiletto')!)
+    useGameStore.getState().equip(ITEMS.find(i => i.name === 'Satin Clutch')!)
+    useGameStore.getState().equip(ITEMS.find(i => i.name === 'Diamond Drops')!)
+    useGameStore.getState().presentLook()
+    const s = useGameStore.getState()
+    expect(s.screen).toBe('result')
+    expect(s.lastResult).not.toBeNull()
+    expect(s.streak).toBe(1)
+    expect(s.totalScore).toBeGreaterThan(0)
+  })
+
+  it('costs a life in Atelier mode on a Faux Pas grade', () => {
+    useGameStore.getState().startAtelier()
+    useGameStore.getState().equip(ITEMS.find(i => i.name === 'White Sneaker')!)
+    useGameStore.getState().presentLook()
+    const s = useGameStore.getState()
+    expect(s.lives).toBe(2)
+    expect(s.streak).toBe(0)
   })
 })
