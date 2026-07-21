@@ -1,6 +1,7 @@
 // src/ui/GameOverScreen.tsx
 import { useGameStore } from '../game/state'
 import { Leaderboard } from './Leaderboard'
+import { buildChallengeLink } from '../leaderboard/share'
 
 export function GameOverScreen() {
   const { totalScore, mode, startDaily, startAtelier, exitToStart } = useGameStore()
@@ -17,6 +18,7 @@ export function GameOverScreen() {
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
         <button onClick={() => (mode === 'daily' ? startDaily() : startAtelier())}>Play Again</button>
         <button onClick={exitToStart}>Home</button>
+        <button onClick={() => navigator.clipboard.writeText(buildChallengeLink(totalScore))}>Challenge a friend</button>
       </div>
     </div>
   )
