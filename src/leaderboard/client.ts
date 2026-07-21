@@ -6,7 +6,12 @@ export type Entry = { name: string; score: number; ts: number }
 const STORAGE_PREFIX = 'theEdit.lb.v1'
 const TOP_KEPT = 25
 const TOP_SHOWN = 10
-const SANITY_CAP = 20000 // generous ceiling well above a plausible max run (SPEC §9.3)
+// Daily is bounded at exactly 5 rounds; a max plausible round score is
+// (900 subtotal + 100 tempo) * 3 streak multiplier = 3000, so 5 rounds -> 15000.
+const DAILY_SANITY_CAP = 15000
+// Atelier is endless (unbounded rounds), so a strong player can legitimately
+// accumulate score indefinitely across a long session; use a generous ceiling.
+const ATELIER_SANITY_CAP = 500000
 
 function localKey(board: string): string {
   return `${STORAGE_PREFIX}.${board}`
@@ -28,7 +33,8 @@ function writeLocal(board: string, entries: Entry[]): void {
 }
 
 export async function postScore(board: string, entry: { name: string; score: number }): Promise<void> {
-  if (entry.score > SANITY_CAP || entry.score < 0) {
+  const cap = board.startsWith('daily:') ? DAILY_SANITY_CAP : ATELIER_SANITY_CAP
+  if (entry.score > cap || entry.score < 0) {
     throw new Error('Score rejected: outside plausible range.')
   }
   const sanitized = sanitizeName(entry.name)
