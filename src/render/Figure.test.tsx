@@ -24,4 +24,10 @@ describe('Figure', () => {
     expect(container.innerHTML).toContain('#F3EEE2') // White Tee cream
     expect(container.innerHTML).toContain('#3B4664') // Straight Jeans indigo
   })
+
+  it('does not render top/bottom colors when a dress is equipped instead', () => {
+    const { container } = render(<Figure equipped={{ dress: gown, top, bottom, shoes }} />)
+    expect(container.innerHTML).not.toContain('#F3EEE2') // White Tee cream
+    expect(container.innerHTML).not.toContain('#3B4664') // Straight Jeans indigo
+  })
 })

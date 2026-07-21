@@ -78,6 +78,37 @@ describe('computeScore golden cases (SPEC.md §10)', () => {
     expect(result.percent).toBeLessThan(35)
   })
 
+  it('drops coherence by ~90 when the palette mixes a warm and a cool non-neutral color', () => {
+    // Wool Coat (camel, warm, non-neutral) + Satin Trousers (emerald, cool, non-neutral, statement)
+    // both non-neutral, opposing warm/cool, and exactly 2 distinct non-neutral families
+    // (triggers both the -90 clash penalty AND the -20 two-family penalty: 250-90-20=140)
+    const equipped = {
+      outerwear: byName('Wool Coat'),
+      bottom: byName('Satin Trousers'),
+      top: byName('White Tee'),
+      shoes: byName('Ballet Flat'),
+    }
+    const result = computeScore(equipped, celine, 40, 40, 0)
+    expect(result.coherence).toBe(140)
+  })
+
+  it('scores flair as 100 for the one correct statement piece, matching the brief vibes', () => {
+    const equipped = { dress: byName('Midnight Gown'), shoes: byName('Black Stiletto'), jewelry: byName('Diamond Drops') }
+    const result = computeScore(equipped, celine, 40, 40, 0)
+    expect(result.flair).toBe(100) // Diamond Drops is glam, matches celine's [glam, classic] vibes exactly
+  })
+
+  it('scores flair as 30 when more than 2 statement pieces are equipped', () => {
+    const equipped = {
+      dress: byName('Emerald Slip'), // statement
+      outerwear: byName('Opera Cape'), // statement
+      bag: byName('Gold Minaudière'), // statement
+      shoes: byName('Silver Sandal'), // statement
+    }
+    const result = computeScore(equipped, celine, 40, 40, 0)
+    expect(result.flair).toBe(30)
+  })
+
   it('applies the streak multiplier to the round score, capped at ×3', () => {
     const equipped = {
       dress: byName('Midnight Gown'),

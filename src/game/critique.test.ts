@@ -39,9 +39,8 @@ describe('critique', () => {
     }
     const score = computeScore(equipped, celine, 40, 40, 0)
     const line = critique(equipped, celine, score)
-    if (score.grade === 'Refined') {
-      expect(line).toContain('Céline')
-    }
+    expect(score.grade).toBe('Refined')
+    expect(line).toContain('Céline')
   })
 
   it('names the weakest dimension for a mediocre look', () => {
@@ -53,5 +52,6 @@ describe('critique', () => {
     expect(line.length).toBeGreaterThan(0)
     expect(line).not.toMatch(/half-dressed/i)
     expect(line).not.toMatch(/shoes to leave the house/i)
+    expect(line).toMatch(/too casual|overdressed/i)
   })
 })
