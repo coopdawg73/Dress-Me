@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useGameStore } from './state'
+import { useGameStore, timeForAtelierRound } from './state'
 import { ITEMS } from './data/items'
 import { BRIEFS } from './data/briefs'
 
@@ -100,5 +100,16 @@ describe('presentLook (scored)', () => {
     const s = useGameStore.getState()
     expect(s.lives).toBe(2)
     expect(s.streak).toBe(0)
+  })
+})
+
+describe('timeForAtelierRound', () => {
+  it('starts at 46s and decreases 2s every 2 rounds, floored at 24s', () => {
+    expect(timeForAtelierRound(1)).toBe(46)
+    expect(timeForAtelierRound(2)).toBe(46)
+    expect(timeForAtelierRound(3)).toBe(44)
+    expect(timeForAtelierRound(4)).toBe(44)
+    expect(timeForAtelierRound(21)).toBe(26)
+    expect(timeForAtelierRound(50)).toBe(24)
   })
 })
