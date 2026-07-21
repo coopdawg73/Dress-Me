@@ -1,9 +1,14 @@
 // src/ui/GameOverScreen.test.tsx
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GameOverScreen } from './GameOverScreen'
 import { useGameStore } from '../game/state'
+
+vi.mock('../leaderboard/client', () => ({
+  getScores: vi.fn(async () => []),
+  postScore: vi.fn(async () => {}),
+}))
 
 beforeEach(() => {
   useGameStore.getState().startDaily()
