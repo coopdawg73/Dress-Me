@@ -1,6 +1,7 @@
 import { StartScreen } from './ui/StartScreen'
 import { GameBoard } from './ui/GameBoard'
 import { ResultSheet } from './ui/ResultSheet'
+import { GameOverScreen } from './ui/GameOverScreen'
 import { useGameStore } from './game/state'
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
         {screen === 'start' && <StartScreen onStartDaily={startDaily} onStartAtelier={startAtelier} />}
         {(screen === 'playing' || screen === 'result') && <GameBoard />}
         {screen === 'result' && <ResultSheet />}
+        {screen === 'gameover' && <GameOverScreen />}
       </main>
       <footer className="app-footer">by Remark</footer>
     </div>
