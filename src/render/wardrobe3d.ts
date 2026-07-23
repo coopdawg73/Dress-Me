@@ -15,6 +15,22 @@ type FabricPhysics = {
   foldCount: number
 }
 
+// Measurements taken from the source GLB's fitted meshes:
+// Female_tshirt y .812–1.239, Female_shorts y .502–.858 and x ±.170.
+// Procedural pieces must meet those meshes instead of inventing a second body.
+export const MODEL_GARMENT_FIT = {
+  shirtBottomY: .812,
+  torsoTopY: 1.239,
+  shortsTopY: .858,
+  waistY: .84,
+  hipY: .70,
+  shortsHemY: .51,
+  ankleY: .12,
+  waistRadiusX: .174,
+  waistRadiusZ: .126,
+  legCenterX: .072,
+} as const
+
 const FABRIC_PHYSICS: Record<FabricKind, FabricPhysics> = {
   silk: { weight: 1.05, stiffness: .18, stretch: .08, foldDepth: .075, clearance: .008, foldCount: 7 },
   knit: { weight: .82, stiffness: .34, stretch: .16, foldDepth: .045, clearance: .006, foldCount: 8 },
@@ -299,14 +315,13 @@ function addTube(
   return { curve, tube }
 }
 
-function addDressSkirt(group: THREE.Group, item: Item) {
+export function dressSkirtRingsFor(item: Item): Ring[] {
   let rings: Ring[]
 
   if (item.id === 'midnight-gown') {
     rings = [
-      [1.01, .135, .102],
-      [.92, .15, .11],
-      [.81, .175, .128],
+      [MODEL_GARMENT_FIT.waistY, .174, .126],
+      [.76, .18, .13],
       [.66, .19, .135],
       [.48, .235, .155],
       [.27, .30, .19],
@@ -314,9 +329,8 @@ function addDressSkirt(group: THREE.Group, item: Item) {
     ]
   } else if (item.id === 'ivory-column') {
     rings = [
-      [1.01, .135, .102],
-      [.92, .15, .11],
-      [.81, .175, .128],
+      [MODEL_GARMENT_FIT.waistY, .174, .126],
+      [.76, .178, .128],
       [.66, .172, .124],
       [.48, .165, .12],
       [.27, .17, .122],
@@ -324,65 +338,59 @@ function addDressSkirt(group: THREE.Group, item: Item) {
     ]
   } else if (item.tmpl === 'cocktail') {
     rings = [
-      [1.01, .135, .102],
-      [.91, .15, .11],
-      [.80, .175, .128],
+      [MODEL_GARMENT_FIT.waistY, .174, .126],
+      [.76, .18, .13],
       [.69, .19, .14],
       [.62, .22, .155],
     ]
   } else if (item.tmpl === 'slip') {
     rings = [
-      [1.01, .132, .10],
-      [.91, .148, .108],
-      [.80, .173, .126],
+      [MODEL_GARMENT_FIT.waistY, .174, .126],
+      [.76, .178, .128],
       [.65, .174, .126],
       [.48, .18, .13],
       [.31, .215, .15],
     ]
   } else {
     rings = [
-      [1.01, .135, .102],
-      [.91, .15, .11],
-      [.80, .175, .128],
+      [MODEL_GARMENT_FIT.waistY, .174, .126],
+      [.76, .18, .13],
       [.64, .185, .135],
       [.46, .22, .15],
       [.34, .26, .17],
     ]
   }
 
-  const skirt = addSurface(group, rings, item)
+  return rings
+}
+
+export function trouserLegFitFor(item: Item) {
+  const wide = item.tmpl === 'wide'
+  return {
+    startY: .66,
+    endY: MODEL_GARMENT_FIT.ankleY,
+    centerX: MODEL_GARMENT_FIT.legCenterX,
+    upperRadius: wide ? .082 : .074,
+    hemRadius: wide ? .105 : item.tmpl === 'jeans' ? .066 : .072,
+  }
+}
+
+function addDressSkirt(group: THREE.Group, item: Item) {
+  const skirt = addSurface(group, dressSkirtRingsFor(item), item)
   const material = skirt.material as THREE.MeshPhysicalMaterial
   material.polygonOffset = true
   material.polygonOffsetFactor = -1
 }
 
-function addDressBodice(group: THREE.Group, item: Item) {
-  addSurface(group, [
-    [1.38, .205, .132],
-    [1.29, .245, .15],
-    [1.18, .25, .155],
-    [1.08, .16, .115],
-    [1.00, .135, .102],
-  ], item)
-
-  const material = createFabricMaterial(item)
-  const strapRadius = item.tmpl === 'slip' ? .009 : .013
-  addCylinderBetween(group, new THREE.Vector3(-.155, 1.365, .015), new THREE.Vector3(-.19, 1.48, -.002), strapRadius, strapRadius, material)
-  addCylinderBetween(group, new THREE.Vector3(.155, 1.365, .015), new THREE.Vector3(.19, 1.48, -.002), strapRadius, strapRadius, material)
-}
-
-function addCami(group: THREE.Group, item: Item) {
-  addSurface(group, [[1.38, .205, .13], [1.25, .265, .15], [1.04, .205, .135], [.9, .25, .15]], item)
-  const material = createFabricMaterial(item)
-  addCylinderBetween(group, new THREE.Vector3(-.16, 1.38, 0), new THREE.Vector3(-.19, 1.48, 0), .018, .018, material)
-  addCylinderBetween(group, new THREE.Vector3(.16, 1.38, 0), new THREE.Vector3(.19, 1.48, 0), .018, .018, material)
-}
-
 function addBottom(group: THREE.Group, item: Item) {
   if (item.tmpl === 'skirt' || item.tmpl === 'pencil') {
-    const flare = item.tmpl === 'skirt' ? .31 : .24
-    const hem = item.tmpl === 'skirt' ? .58 : .53
-    const skirt = addSurface(group, [[.96, .175, .125], [.82, .225, .15], [hem, flare, .18]], item)
+    const flare = item.tmpl === 'skirt' ? .255 : .178
+    const hemY = item.tmpl === 'skirt' ? .53 : .49
+    const skirt = addSurface(group, [
+      [MODEL_GARMENT_FIT.waistY, .174, .126],
+      [.70, item.tmpl === 'skirt' ? .195 : .176, item.tmpl === 'skirt' ? .137 : .128],
+      [hemY, flare, item.tmpl === 'skirt' ? .17 : .132],
+    ], item)
     if (item.tmpl === 'skirt') {
       const material = skirt.material as THREE.MeshPhysicalMaterial
       material.flatShading = true
@@ -390,30 +398,35 @@ function addBottom(group: THREE.Group, item: Item) {
     return
   }
 
-  const wide = item.tmpl === 'wide'
   const material = createFabricMaterial(item)
-  addSurface(group, [
-    [.99, .132, .10],
-    [.93, .14, .106],
-    [.86, .16, .12],
-    [.78, .168, .125],
-    [.73, .148, .116],
-  ], item)
-  const legCenter = wide ? .068 : .063
-  const upperLeg = wide ? .067 : .06
-  const hem = wide ? .108 : item.tmpl === 'jeans' ? .063 : .069
-  addCylinderBetween(group, new THREE.Vector3(-legCenter, .75, 0), new THREE.Vector3(-legCenter, .12, 0), upperLeg, hem, material)
-  addCylinderBetween(group, new THREE.Vector3(legCenter, .75, 0), new THREE.Vector3(legCenter, .12, 0), upperLeg, hem, material)
+  const fit = trouserLegFitFor(item)
+  addCylinderBetween(
+    group,
+    new THREE.Vector3(-fit.centerX, fit.startY, -.006),
+    new THREE.Vector3(-fit.centerX, fit.endY, -.006),
+    fit.upperRadius,
+    fit.hemRadius,
+    material,
+  )
+  addCylinderBetween(
+    group,
+    new THREE.Vector3(fit.centerX, fit.startY, -.006),
+    new THREE.Vector3(fit.centerX, fit.endY, -.006),
+    fit.upperRadius,
+    fit.hemRadius,
+    material,
+  )
 }
 
 function addOuterwear(group: THREE.Group, item: Item) {
   if (item.tmpl === 'cape') {
-    addSurface(group, [[1.28, .23, .16], [1.18, .32, .19], [.70, .43, .25]], item)
+    addSurface(group, [[1.20, .22, .15], [1.08, .25, .17], [.84, .31, .20]], item)
     return
   }
+  if (item.tmpl === 'jacket') return
   const hem = item.tmpl === 'jacket' ? .82 : item.tmpl === 'trench' ? .38 : .53
   const flare = item.tmpl === 'jacket' ? .23 : .29
-  addSurface(group, [[1.01, .18, .13], [.91, .22, .15], [hem, flare, .18]], item)
+  addSurface(group, [[.84, .178, .13], [.72, .19, .14], [hem, flare, .18]], item)
 }
 
 function addBag(group: THREE.Group, item: Item) {
@@ -556,24 +569,18 @@ export function applyWardrobe(model: THREE.Object3D, equipped: Equipped): THREE.
 
   if (equipped.dress) {
     if (shorts) shorts.visible = false
-    if (equipped.dress.tmpl === 'midi') {
-      if (shirt) replaceMeshMaterial(shirt, equipped.dress)
-    } else {
-      if (shirt) shirt.visible = false
-      addDressBodice(wardrobe, equipped.dress)
-    }
+    // The source shirt is rigged to the avatar and already matches its torso
+    // exactly. Reusing it avoids procedural bodices floating at the neck.
+    if (shirt) replaceMeshMaterial(shirt, equipped.dress)
     addDressSkirt(wardrobe, equipped.dress)
   } else {
-    if (equipped.top) {
-      if (equipped.top.tmpl === 'cami') {
-        if (shirt) shirt.visible = false
-        addCami(wardrobe, equipped.top)
-      } else if (shirt) {
-        replaceMeshMaterial(shirt, equipped.top)
-      }
-    }
+    if (equipped.top && shirt) replaceMeshMaterial(shirt, equipped.top)
     if (equipped.bottom) {
-      if (shorts) shorts.visible = false
+      const isSkirt = equipped.bottom.tmpl === 'skirt' || equipped.bottom.tmpl === 'pencil'
+      if (shorts) {
+        shorts.visible = !isSkirt
+        if (!isSkirt) replaceMeshMaterial(shorts, equipped.bottom)
+      }
       addBottom(wardrobe, equipped.bottom)
     }
   }
