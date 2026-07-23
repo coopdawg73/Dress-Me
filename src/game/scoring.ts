@@ -21,7 +21,7 @@ export type ScoreBreakdown = {
 }
 
 const SLOT_WEIGHTS: Record<Slot, number> = {
-  dress: 2.2, top: 1.3, bottom: 1.3, shoes: 1.3, outerwear: 1.2, bag: 0.8, jewelry: 0.7,
+  dress: 2.2, top: 1.3, bottom: 1.3, shoes: 1.3, bag: 0.8, jewelry: 0.7,
 }
 
 const ADJACENCY: Record<Archetype, Archetype[]> = {
@@ -112,13 +112,6 @@ export function computeScore(
   let coherence = computeCoherence(items)
   const vibe = computeVibe(items, brief.vibes)
   const flair = computeFlair(items, brief)
-
-  const hasOuter = Boolean(equipped.outerwear)
-  if (brief.requireOuter && !hasOuter) coherence *= 0.80
-  if (brief.forbidOuter && hasOuter) {
-    coherence *= 0.82
-    occasion *= 0.90
-  }
 
   let subtotal = occasion + coherence + vibe + flair
 

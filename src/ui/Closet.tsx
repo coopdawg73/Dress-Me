@@ -4,12 +4,11 @@ import type { Item, Slot } from '../game/data/items'
 import { itemsBySlot } from '../game/data/items'
 import { Thumb } from '../render/Thumb'
 
-const SLOTS: Slot[] = ['dress', 'top', 'bottom', 'outerwear', 'shoes', 'bag', 'jewelry']
+const SLOTS: Slot[] = ['dress', 'top', 'bottom', 'shoes', 'bag', 'jewelry']
 const SLOT_LABELS: Record<Slot, string> = {
   dress: 'Dresses',
   top: 'Tops',
   bottom: 'Bottoms',
-  outerwear: 'Outerwear',
   shoes: 'Shoes',
   bag: 'Bags',
   jewelry: 'Jewelry',

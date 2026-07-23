@@ -16,7 +16,7 @@ function item(id: string) {
 describe('fabric physics', () => {
   it('lets silk drape more deeply than structured leather', () => {
     const silk = fabricPhysicsFor(item('emerald-slip'))
-    const leather = fabricPhysicsFor(item('leather-trench'))
+    const leather = fabricPhysicsFor(item('leather-tote'))
 
     expect(silk.foldDepth).toBeGreaterThan(leather.foldDepth)
     expect(silk.stiffness).toBeLessThan(leather.stiffness)

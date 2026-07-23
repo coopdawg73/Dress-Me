@@ -316,52 +316,16 @@ function addTube(
 }
 
 export function dressSkirtRingsFor(item: Item): Ring[] {
-  let rings: Ring[]
-
-  if (item.id === 'midnight-gown') {
-    rings = [
-      [MODEL_GARMENT_FIT.waistY, .174, .126],
-      [.76, .18, .13],
-      [.66, .19, .135],
-      [.48, .235, .155],
-      [.27, .30, .19],
-      [.08, .35, .22],
-    ]
-  } else if (item.id === 'ivory-column') {
-    rings = [
-      [MODEL_GARMENT_FIT.waistY, .174, .126],
-      [.76, .178, .128],
-      [.66, .172, .124],
-      [.48, .165, .12],
-      [.27, .17, .122],
-      [.08, .195, .138],
-    ]
-  } else if (item.tmpl === 'cocktail') {
-    rings = [
-      [MODEL_GARMENT_FIT.waistY, .174, .126],
-      [.76, .18, .13],
-      [.69, .19, .14],
-      [.62, .22, .155],
-    ]
-  } else if (item.tmpl === 'slip') {
-    rings = [
-      [MODEL_GARMENT_FIT.waistY, .174, .126],
-      [.76, .178, .128],
-      [.65, .174, .126],
-      [.48, .18, .13],
-      [.31, .215, .15],
-    ]
-  } else {
-    rings = [
-      [MODEL_GARMENT_FIT.waistY, .174, .126],
-      [.76, .18, .13],
-      [.64, .185, .135],
-      [.46, .22, .15],
-      [.34, .26, .17],
-    ]
-  }
-
-  return rings
+  void item
+  // The navy midi is the one dress silhouette proven to fit this avatar.
+  // Every dress deliberately shares its exact construction.
+  return [
+    [MODEL_GARMENT_FIT.waistY, .174, .126],
+    [.76, .18, .13],
+    [.64, .185, .135],
+    [.46, .22, .15],
+    [.34, .26, .17],
+  ]
 }
 
 export function trouserLegFitFor(item: Item) {
@@ -416,17 +380,6 @@ function addBottom(group: THREE.Group, item: Item) {
     fit.hemRadius,
     material,
   )
-}
-
-function addOuterwear(group: THREE.Group, item: Item) {
-  if (item.tmpl === 'cape') {
-    addSurface(group, [[1.20, .22, .15], [1.08, .25, .17], [.84, .31, .20]], item)
-    return
-  }
-  if (item.tmpl === 'jacket') return
-  const hem = item.tmpl === 'jacket' ? .82 : item.tmpl === 'trench' ? .38 : .53
-  const flare = item.tmpl === 'jacket' ? .23 : .29
-  addSurface(group, [[.84, .178, .13], [.72, .19, .14], [hem, flare, .18]], item)
 }
 
 function addBag(group: THREE.Group, item: Item) {
@@ -586,10 +539,6 @@ export function applyWardrobe(model: THREE.Object3D, equipped: Equipped): THREE.
   }
 
   if (equipped.shoes && shoes) replaceMeshMaterial(shoes, equipped.shoes)
-  if (equipped.outerwear) {
-    if (shirt) replaceMeshMaterial(shirt, equipped.outerwear)
-    addOuterwear(wardrobe, equipped.outerwear)
-  }
   if (equipped.bag) addBag(wardrobe, equipped.bag)
   if (equipped.jewelry) addJewelry(wardrobe, equipped.jewelry)
 

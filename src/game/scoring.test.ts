@@ -79,11 +79,11 @@ describe('computeScore golden cases (SPEC.md §10)', () => {
   })
 
   it('drops coherence by ~90 when the palette mixes a warm and a cool non-neutral color', () => {
-    // Wool Coat (camel, warm, non-neutral) + Satin Trousers (emerald, cool, non-neutral, statement)
+    // Gold Minaudière (gold, warm, non-neutral) + Satin Trousers (emerald, cool, non-neutral, statement)
     // both non-neutral, opposing warm/cool, and exactly 2 distinct non-neutral families
     // (triggers both the -90 clash penalty AND the -20 two-family penalty: 250-90-20=140)
     const equipped = {
-      outerwear: byName('Wool Coat'),
+      bag: byName('Gold Minaudière'),
       bottom: byName('Satin Trousers'),
       top: byName('White Tee'),
       shoes: byName('Ballet Flat'),
@@ -101,9 +101,9 @@ describe('computeScore golden cases (SPEC.md §10)', () => {
   it('scores flair as 30 when more than 2 statement pieces are equipped', () => {
     const equipped = {
       dress: byName('Emerald Slip'), // statement
-      outerwear: byName('Opera Cape'), // statement
       bag: byName('Gold Minaudière'), // statement
       shoes: byName('Silver Sandal'), // statement
+      jewelry: byName('Statement Collar'), // statement
     }
     const result = computeScore(equipped, celine, 40, 40, 0)
     expect(result.flair).toBe(30)

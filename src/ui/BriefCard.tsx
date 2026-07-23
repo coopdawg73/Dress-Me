@@ -12,8 +12,6 @@ export function BriefCard({ brief, timeLeft, maxTime }: BriefCardProps) {
   const warm = pct < 30
   const flags: string[] = []
   if (brief.flair) flags.push('Make a statement')
-  if (brief.requireOuter) flags.push('Outerwear expected')
-  if (brief.forbidOuter) flags.push('No outerwear')
 
   return (
     <section className="brief-card">

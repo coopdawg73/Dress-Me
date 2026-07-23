@@ -7,16 +7,10 @@ import { PALETTE } from '../game/data/palette'
 
 const OUTLINE = 'rgba(0,0,0,.30)'
 
-type DressShape = { hemY: number; hipFlare: number; waist: number }
-const DRESS_SHAPES: Record<string, DressShape> = {
-  gown: { hemY: 480, hipFlare: 46, waist: 92 },
-  cocktail: { hemY: 330, hipFlare: 30, waist: 92 },
-  slip: { hemY: 400, hipFlare: 20, waist: 92 },
-  midi: { hemY: 370, hipFlare: 26, waist: 92 },
-}
+const NAVY_MIDI_SHAPE = { hemY: 370, hipFlare: 26, waist: 92 }
 
 function drawDress(item: Item) {
-  const shape = DRESS_SHAPES[item.tmpl] ?? DRESS_SHAPES.midi
+  const shape = NAVY_MIDI_SHAPE
   const hex = PALETTE[item.color].hex
   const top = 150
   const hipY = 230
@@ -41,7 +35,6 @@ function drawDress(item: Item) {
 
 type TopShape = { hemY: number; sleeve: 'none' | 'short' | 'long' }
 const TOP_SHAPES: Record<string, TopShape> = {
-  blouse: { hemY: 250, sleeve: 'long' },
   knit: { hemY: 255, sleeve: 'long' },
   blazer: { hemY: 260, sleeve: 'long' },
   tee: { hemY: 240, sleeve: 'short' },
@@ -49,7 +42,7 @@ const TOP_SHAPES: Record<string, TopShape> = {
 }
 
 function drawTop(item: Item) {
-  const shape = TOP_SHAPES[item.tmpl] ?? TOP_SHAPES.blouse
+  const shape = TOP_SHAPES[item.tmpl] ?? TOP_SHAPES.tee
   const hex = PALETTE[item.color].hex
   const top = 150
   return (
@@ -97,27 +90,6 @@ function drawBottom(item: Item) {
           <rect x={120 + shape.legWidth / 2} y={waistY} width={44 - shape.legWidth / 2} height={shape.hemY - waistY} fill={hex} stroke={OUTLINE} strokeWidth={1.2} />
         </>
       )}
-    </g>
-  )
-}
-
-type OuterShape = { hemY: number }
-const OUTER_SHAPES: Record<string, OuterShape> = {
-  coat: { hemY: 440 },
-  trench: { hemY: 430 },
-  cape: { hemY: 400 },
-  jacket: { hemY: 280 },
-}
-
-function drawOuter(item: Item) {
-  const shape = OUTER_SHAPES[item.tmpl] ?? OUTER_SHAPES.jacket
-  const hex = PALETTE[item.color].hex
-  const top = 145
-  return (
-    <g key={item.id} opacity={0.96}>
-      <path d={`M 62 ${top} L 55 ${shape.hemY} L 108 ${shape.hemY} L 112 ${top + 20} Z`} fill={hex} stroke={OUTLINE} strokeWidth={1.5} />
-      <path d={`M 178 ${top} L 185 ${shape.hemY} L 132 ${shape.hemY} L 128 ${top + 20} Z`} fill={hex} stroke={OUTLINE} strokeWidth={1.5} />
-      <path d={`M 96 ${top} L 120 ${top + 18} L 144 ${top} L 120 ${top - 8} Z`} fill={hex} stroke={OUTLINE} strokeWidth={1} />
     </g>
   )
 }
@@ -183,7 +155,6 @@ const DRAW_BY_SLOT: Record<Slot, (item: Item) => ReactElement> = {
   dress: drawDress,
   top: drawTop,
   bottom: drawBottom,
-  outerwear: drawOuter,
   shoes: drawShoes,
   bag: drawBag,
   jewelry: drawJewelry,

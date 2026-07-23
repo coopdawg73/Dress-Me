@@ -1,6 +1,6 @@
 import type { ColorKey } from './palette'
 
-export type Slot = 'dress' | 'top' | 'bottom' | 'outerwear' | 'shoes' | 'bag' | 'jewelry'
+export type Slot = 'dress' | 'top' | 'bottom' | 'shoes' | 'bag' | 'jewelry'
 export type Archetype = 'classic' | 'minimal' | 'romantic' | 'glam' | 'edgy' | 'relaxed'
 export type Formality = 1 | 2 | 3 | 4 | 5
 
@@ -34,7 +34,6 @@ export const ITEMS: Item[] = [
   item('dress', 'noir-cocktail', 'Noir Cocktail', 'cocktail', 'black', 4, 'classic'),
 
   // Tops
-  item('top', 'silk-blouse', 'Silk Blouse', 'blouse', 'ivory', 3, 'classic'),
   item('top', 'cashmere-knit', 'Cashmere Knit', 'knit', 'grey', 2, 'minimal'),
   item('top', 'tuxedo-blazer', 'Tuxedo Blazer', 'blazer', 'black', 4, 'edgy'),
   item('top', 'white-tee', 'White Tee', 'tee', 'cream', 1, 'relaxed'),
@@ -48,13 +47,6 @@ export const ITEMS: Item[] = [
   item('bottom', 'pleated-skirt', 'Pleated Skirt', 'skirt', 'ivory', 3, 'romantic'),
   item('bottom', 'pencil-skirt', 'Pencil Skirt', 'pencil', 'charcoal', 4, 'classic'),
   item('bottom', 'satin-trousers', 'Satin Trousers', 'trousers', 'emerald', 4, 'glam', true),
-
-  // Outerwear
-  item('outerwear', 'wool-coat', 'Wool Coat', 'coat', 'camel', 3, 'classic'),
-  item('outerwear', 'leather-trench', 'Leather Trench', 'trench', 'black', 3, 'edgy'),
-  item('outerwear', 'opera-cape', 'Opera Cape', 'cape', 'ivory', 4, 'glam', true),
-  item('outerwear', 'tailored-blazer-outer', 'Tailored Blazer', 'jacket', 'grey', 3, 'minimal'),
-  item('outerwear', 'velvet-blazer', 'Velvet Blazer', 'jacket', 'burgundy', 4, 'glam', true),
 
   // Shoes
   item('shoes', 'black-stiletto', 'Black Stiletto', 'heel', 'black', 4, 'glam'),

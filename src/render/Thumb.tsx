@@ -5,7 +5,6 @@ const CROP: Record<Slot, string> = {
   dress: '70 116 100 364',
   top: '55 100 130 160',
   bottom: '70 240 100 230',
-  outerwear: '50 130 140 320',
   shoes: '80 456 84 42',
   bag: '170 285 44 50',
   jewelry: '95 128 50 40',

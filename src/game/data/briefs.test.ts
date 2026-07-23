@@ -18,12 +18,9 @@ describe('BRIEFS', () => {
       vibes: ['glam', 'classic'],
       flair: true,
     })
-    expect(celine.requireOuter).toBeUndefined()
-    expect(celine.forbidOuter).toBeUndefined()
   })
 
-  it('gives Inès the forbidOuter flag and Astrid the requireOuter flag', () => {
-    expect(BRIEFS.find(b => b.name === 'Inès')!.forbidOuter).toBe(true)
-    expect(BRIEFS.find(b => b.name === 'Astrid')!.requireOuter).toBe(true)
+  it('does not require a removed wardrobe category', () => {
+    expect(BRIEFS.every(brief => !('requireOuter' in brief) && !('forbidOuter' in brief))).toBe(true)
   })
 })

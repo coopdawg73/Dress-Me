@@ -11,8 +11,8 @@ type FigureProps = {
 
 function equippedColorString(equipped: FigureProps['equipped']) {
   const visibleItems = equipped.dress
-    ? [equipped.dress, equipped.shoes, equipped.outerwear, equipped.bag, equipped.jewelry]
-    : [equipped.top, equipped.bottom, equipped.shoes, equipped.outerwear, equipped.bag, equipped.jewelry]
+    ? [equipped.dress, equipped.shoes, equipped.bag, equipped.jewelry]
+    : [equipped.top, equipped.bottom, equipped.shoes, equipped.bag, equipped.jewelry]
   return visibleItems
     .filter((item): item is Item => Boolean(item))
     .map(item => PALETTE[item.color].hex)
