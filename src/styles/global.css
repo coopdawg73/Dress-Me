@@ -49,14 +49,6 @@ h1, h2, h3, .display {
   padding: 2rem;
 }
 
-.fashion-figure {
-  display: block;
-  max-height: 72vh;
-  min-height: 520px;
-  overflow: visible;
-  filter: saturate(.96) contrast(1.02);
-}
-
 @media (max-width: 720px) {
   .board-columns {
     flex-direction: column;
