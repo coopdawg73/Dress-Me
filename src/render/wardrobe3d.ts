@@ -150,12 +150,13 @@ function bodyEnvelope(y: number): [radiusX: number, radiusZ: number] {
   const points: Ring[] = [
     [1.38, .205, .13],
     [1.25, .255, .15],
-    [1.05, .19, .125],
-    [.94, .205, .14],
-    [.82, .245, .158],
-    [.66, .225, .145],
-    [.48, .19, .125],
-    [.28, .145, .105],
+    [1.08, .155, .112],
+    [.98, .13, .098],
+    [.90, .145, .108],
+    [.81, .17, .126],
+    [.66, .165, .12],
+    [.48, .145, .108],
+    [.28, .12, .095],
     [.08, .11, .085],
   ]
   if (y >= points[0][0]) return [points[0][1], points[0][2]]
@@ -193,7 +194,7 @@ function garmentSurface(rings: Ring[], item: Item, segments = 64): THREE.BufferG
       const angle = (segment / segments) * Math.PI * 2
       const primaryFold = Math.sin(angle * physics.foldCount + phase)
       const secondaryFold = Math.sin(angle * (physics.foldCount + 3) - phase * .7) * .38
-      const fold = (primaryFold + secondaryFold) * physics.foldDepth * (.18 + released * .82)
+      const fold = (primaryFold + secondaryFold) * physics.foldDepth * (.02 + released * .98)
       const ease = physics.stretch * released * .018
       const radiusX = Math.max(collisionX, rx + fold + ease)
       const radiusZ = Math.max(collisionZ, rz + fold * .72 + ease * .55)
@@ -257,54 +258,95 @@ function addCylinderBetween(
   return mesh
 }
 
+function roundedBagGeometry(width: number, height: number, depth: number, radius: number) {
+  const halfWidth = width / 2
+  const halfHeight = height / 2
+  const shape = new THREE.Shape()
+  shape.moveTo(-halfWidth + radius, -halfHeight)
+  shape.lineTo(halfWidth - radius, -halfHeight)
+  shape.quadraticCurveTo(halfWidth, -halfHeight, halfWidth, -halfHeight + radius)
+  shape.lineTo(halfWidth, halfHeight - radius)
+  shape.quadraticCurveTo(halfWidth, halfHeight, halfWidth - radius, halfHeight)
+  shape.lineTo(-halfWidth + radius, halfHeight)
+  shape.quadraticCurveTo(-halfWidth, halfHeight, -halfWidth, halfHeight - radius)
+  shape.lineTo(-halfWidth, -halfHeight + radius)
+  shape.quadraticCurveTo(-halfWidth, -halfHeight, -halfWidth + radius, -halfHeight)
+
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelSegments: 3,
+    bevelSize: Math.min(radius * .22, .008),
+    bevelThickness: .006,
+    curveSegments: 12,
+  })
+  geometry.translate(0, 0, -depth / 2)
+  geometry.computeVertexNormals()
+  return geometry
+}
+
+function addTube(
+  group: THREE.Group,
+  points: THREE.Vector3[],
+  radius: number,
+  material: THREE.Material,
+  tubularSegments = 32,
+) {
+  const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal')
+  const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, tubularSegments, radius, 8, false), material)
+  tube.castShadow = true
+  group.add(tube)
+  return { curve, tube }
+}
+
 function addDressSkirt(group: THREE.Group, item: Item) {
   let rings: Ring[]
 
   if (item.id === 'midnight-gown') {
     rings = [
-      [1.01, .185, .13],
-      [.92, .215, .145],
-      [.81, .25, .16],
-      [.66, .245, .158],
-      [.48, .265, .17],
-      [.27, .315, .20],
-      [.08, .37, .23],
+      [1.01, .135, .102],
+      [.92, .15, .11],
+      [.81, .175, .128],
+      [.66, .19, .135],
+      [.48, .235, .155],
+      [.27, .30, .19],
+      [.08, .35, .22],
     ]
   } else if (item.id === 'ivory-column') {
     rings = [
-      [1.01, .185, .13],
-      [.92, .215, .145],
-      [.81, .25, .16],
-      [.66, .232, .15],
-      [.48, .21, .14],
-      [.27, .205, .138],
-      [.08, .225, .15],
+      [1.01, .135, .102],
+      [.92, .15, .11],
+      [.81, .175, .128],
+      [.66, .172, .124],
+      [.48, .165, .12],
+      [.27, .17, .122],
+      [.08, .195, .138],
     ]
   } else if (item.tmpl === 'cocktail') {
     rings = [
-      [1.01, .185, .13],
-      [.91, .215, .145],
-      [.80, .25, .16],
-      [.69, .26, .17],
-      [.62, .285, .18],
+      [1.01, .135, .102],
+      [.91, .15, .11],
+      [.80, .175, .128],
+      [.69, .19, .14],
+      [.62, .22, .155],
     ]
   } else if (item.tmpl === 'slip') {
     rings = [
-      [1.01, .18, .128],
-      [.91, .212, .143],
-      [.80, .248, .158],
-      [.65, .23, .148],
-      [.48, .22, .145],
-      [.31, .255, .165],
+      [1.01, .132, .10],
+      [.91, .148, .108],
+      [.80, .173, .126],
+      [.65, .174, .126],
+      [.48, .18, .13],
+      [.31, .215, .15],
     ]
   } else {
     rings = [
-      [1.01, .185, .13],
-      [.91, .215, .145],
-      [.80, .25, .16],
-      [.64, .245, .16],
-      [.46, .275, .175],
-      [.34, .31, .19],
+      [1.01, .135, .102],
+      [.91, .15, .11],
+      [.80, .175, .128],
+      [.64, .185, .135],
+      [.46, .22, .15],
+      [.34, .26, .17],
     ]
   }
 
@@ -319,8 +361,8 @@ function addDressBodice(group: THREE.Group, item: Item) {
     [1.38, .205, .132],
     [1.29, .245, .15],
     [1.18, .25, .155],
-    [1.07, .205, .135],
-    [1.00, .185, .13],
+    [1.08, .16, .115],
+    [1.00, .135, .102],
   ], item)
 
   const material = createFabricMaterial(item)
@@ -350,9 +392,18 @@ function addBottom(group: THREE.Group, item: Item) {
 
   const wide = item.tmpl === 'wide'
   const material = createFabricMaterial(item)
-  addSurface(group, [[.98, .17, .12], [.89, .21, .145], [.76, .195, .135]], item)
-  addCylinderBetween(group, new THREE.Vector3(-.09, .78, 0), new THREE.Vector3(-.09, .12, 0), wide ? .09 : .074, wide ? .115 : .068, material)
-  addCylinderBetween(group, new THREE.Vector3(.09, .78, 0), new THREE.Vector3(.09, .12, 0), wide ? .09 : .074, wide ? .115 : .068, material)
+  addSurface(group, [
+    [.99, .132, .10],
+    [.93, .14, .106],
+    [.86, .16, .12],
+    [.78, .168, .125],
+    [.73, .148, .116],
+  ], item)
+  const legCenter = wide ? .068 : .063
+  const upperLeg = wide ? .067 : .06
+  const hem = wide ? .108 : item.tmpl === 'jeans' ? .063 : .069
+  addCylinderBetween(group, new THREE.Vector3(-legCenter, .75, 0), new THREE.Vector3(-legCenter, .12, 0), upperLeg, hem, material)
+  addCylinderBetween(group, new THREE.Vector3(legCenter, .75, 0), new THREE.Vector3(legCenter, .12, 0), upperLeg, hem, material)
 }
 
 function addOuterwear(group: THREE.Group, item: Item) {
@@ -367,31 +418,117 @@ function addOuterwear(group: THREE.Group, item: Item) {
 
 function addBag(group: THREE.Group, item: Item) {
   const material = createFabricMaterial(item)
-  const clutch = item.tmpl === 'clutch' || item.tmpl === 'minaudiere'
-  const width = clutch ? .24 : .32
-  const height = clutch ? .16 : .30
-  const bag = new THREE.Mesh(new THREE.BoxGeometry(width, height, .095, 4, 4, 2), material)
-  bag.position.set(.49, .61, .08)
+  const clutch = item.tmpl === 'clutch'
+  const minaudiere = item.tmpl === 'minaudiere'
+  const shoulder = item.tmpl === 'shoulder'
+  const tote = item.tmpl === 'tote'
+  const width = minaudiere ? .145 : clutch ? .18 : shoulder ? .185 : .22
+  const height = minaudiere ? .09 : clutch ? .105 : shoulder ? .145 : item.id === 'woven-basket' ? .175 : .20
+  const depth = minaudiere ? .07 : clutch ? .052 : .075
+  const position = shoulder
+    ? new THREE.Vector3(.285, .57, .10)
+    : clutch || minaudiere
+      ? new THREE.Vector3(.335, .47, .075)
+      : new THREE.Vector3(.34, .49, .085)
+
+  const bag = new THREE.Mesh(roundedBagGeometry(width, height, depth, Math.min(width, height) * .18), material)
+  bag.position.copy(position)
+  bag.rotation.y = -.08
+  bag.rotation.z = shoulder ? -.025 : clutch || minaudiere ? -.035 : .015
   bag.castShadow = true
+  bag.receiveShadow = true
   group.add(bag)
 
-  if (!clutch) {
-    const handle = new THREE.Mesh(new THREE.TorusGeometry(width * .32, .014, 8, 32, Math.PI), material)
-    handle.position.set(.49, .61 + height * .48, .08)
-    handle.rotation.z = Math.PI
-    group.add(handle)
+  if (minaudiere) {
+    const clasp = new THREE.Mesh(new THREE.SphereGeometry(.013, 16, 10), material)
+    clasp.position.set(position.x, position.y + height * .55, position.z)
+    clasp.castShadow = true
+    group.add(clasp)
+  } else if (clutch) {
+    const flap = new THREE.Mesh(roundedBagGeometry(width * .92, height * .43, depth * .16, .012), material)
+    flap.position.set(position.x, position.y + height * .18, position.z + depth * .54)
+    flap.rotation.z = bag.rotation.z
+    group.add(flap)
+  } else if (shoulder) {
+    addTube(group, [
+      new THREE.Vector3(.17, 1.35, .13),
+      new THREE.Vector3(.205, 1.02, .16),
+      new THREE.Vector3(.265, .73, .15),
+      new THREE.Vector3(position.x - width * .34, position.y + height * .42, position.z),
+    ], .006, material, 44)
+    const flap = new THREE.Mesh(roundedBagGeometry(width * .94, height * .44, depth * .16, .012), material)
+    flap.position.set(position.x, position.y + height * .18, position.z + depth * .54)
+    group.add(flap)
+  } else if (tote) {
+    addTube(group, [
+      new THREE.Vector3(position.x - width * .29, position.y + height * .46, position.z),
+      new THREE.Vector3(position.x - width * .20, position.y + height * .78, position.z),
+      new THREE.Vector3(position.x + width * .20, position.y + height * .78, position.z),
+      new THREE.Vector3(position.x + width * .29, position.y + height * .46, position.z),
+    ], .008, material, 28)
   }
 }
 
 function addJewelry(group: THREE.Group, item: Item) {
   const material = createFabricMaterial(item)
-  const necklace = new THREE.Mesh(new THREE.TorusGeometry(.105, item.tmpl === 'collar' ? .016 : .006, 10, 40, Math.PI), material)
-  necklace.position.set(0, 1.25, .15)
-  necklace.rotation.z = Math.PI
-  group.add(necklace)
-  const pendant = new THREE.Mesh(new THREE.OctahedronGeometry(item.tmpl === 'collar' ? .035 : .022), material)
-  pendant.position.set(0, 1.145, .165)
-  group.add(pendant)
+  if (item.id === 'diamond-drops') {
+    for (const side of [-1, 1]) {
+      const x = side * .205
+      const stud = new THREE.Mesh(new THREE.SphereGeometry(.009, 14, 10), material)
+      stud.position.set(x, 1.49, .018)
+      group.add(stud)
+      addCylinderBetween(
+        group,
+        new THREE.Vector3(x, 1.482, .018),
+        new THREE.Vector3(x, 1.435, .025),
+        .0025,
+        .0025,
+        material,
+      )
+      const drop = new THREE.Mesh(new THREE.OctahedronGeometry(.014, 0), material)
+      drop.scale.set(.7, 1.35, .7)
+      drop.position.set(x, 1.423, .028)
+      drop.castShadow = true
+      group.add(drop)
+    }
+    return
+  }
+
+  const collar = item.tmpl === 'collar'
+  const necklacePoints = [
+    new THREE.Vector3(-.105, 1.305, .125),
+    new THREE.Vector3(-.082, 1.255, .153),
+    new THREE.Vector3(0, collar ? 1.185 : 1.205, .17),
+    new THREE.Vector3(.082, 1.255, .153),
+    new THREE.Vector3(.105, 1.305, .125),
+  ]
+  const curve = new THREE.CatmullRomCurve3(necklacePoints, false, 'centripetal')
+
+  if (item.tmpl === 'pearl') {
+    const pearlGeometry = new THREE.SphereGeometry(.009, 14, 10)
+    curve.getPoints(18).forEach((point) => {
+      const pearl = new THREE.Mesh(pearlGeometry, material)
+      pearl.position.copy(point)
+      pearl.castShadow = true
+      group.add(pearl)
+    })
+  } else {
+    addTube(group, necklacePoints, collar ? .008 : .0035, material, 40)
+  }
+
+  if (item.id === 'gold-chain') {
+    const pendant = new THREE.Mesh(new THREE.OctahedronGeometry(.014, 0), material)
+    pendant.scale.set(.78, 1.2, .55)
+    pendant.position.set(0, 1.185, .175)
+    pendant.castShadow = true
+    group.add(pendant)
+  } else if (collar) {
+    const center = new THREE.Mesh(new THREE.ConeGeometry(.024, .045, 3), material)
+    center.position.set(0, 1.16, .177)
+    center.rotation.z = Math.PI
+    center.castShadow = true
+    group.add(center)
+  }
 }
 
 function replaceMeshMaterial(mesh: THREE.Mesh, item: Item) {
