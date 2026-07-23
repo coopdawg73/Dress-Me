@@ -4,8 +4,29 @@ import { PALETTE } from '../game/data/palette'
 
 type Equipped = Partial<Record<Slot, Item>>
 type Ring = [y: number, radiusX: number, radiusZ: number]
+type FabricKind = 'silk' | 'knit' | 'denim' | 'wool' | 'leather' | 'velvet' | 'cotton' | 'metal'
 
-function fabricFor(item: Item): 'silk' | 'knit' | 'denim' | 'wool' | 'leather' | 'velvet' | 'cotton' | 'metal' {
+type FabricPhysics = {
+  weight: number
+  stiffness: number
+  stretch: number
+  foldDepth: number
+  clearance: number
+  foldCount: number
+}
+
+const FABRIC_PHYSICS: Record<FabricKind, FabricPhysics> = {
+  silk: { weight: 1.05, stiffness: .18, stretch: .08, foldDepth: .075, clearance: .008, foldCount: 7 },
+  knit: { weight: .82, stiffness: .34, stretch: .16, foldDepth: .045, clearance: .006, foldCount: 8 },
+  denim: { weight: .72, stiffness: .82, stretch: .025, foldDepth: .02, clearance: .014, foldCount: 5 },
+  wool: { weight: .88, stiffness: .68, stretch: .035, foldDepth: .032, clearance: .016, foldCount: 6 },
+  leather: { weight: .78, stiffness: .92, stretch: .018, foldDepth: .014, clearance: .019, foldCount: 4 },
+  velvet: { weight: 1.12, stiffness: .44, stretch: .05, foldDepth: .052, clearance: .01, foldCount: 7 },
+  cotton: { weight: .72, stiffness: .56, stretch: .045, foldDepth: .036, clearance: .011, foldCount: 6 },
+  metal: { weight: 1.2, stiffness: .98, stretch: 0, foldDepth: 0, clearance: .012, foldCount: 4 },
+}
+
+function fabricFor(item: Item): FabricKind {
   if (item.color === 'silver' || item.color === 'gold' || item.slot === 'jewelry') return 'metal'
   if (item.id.includes('silk') || item.tmpl === 'slip' || item.tmpl === 'gown' || item.tmpl === 'sandal') return 'silk'
   if (item.id.includes('knit') || item.tmpl === 'midi') return 'knit'
@@ -14,6 +35,10 @@ function fabricFor(item: Item): 'silk' | 'knit' | 'denim' | 'wool' | 'leather' |
   if (item.id.includes('leather') || item.tmpl === 'trench' || item.tmpl === 'boot' || item.tmpl === 'tote') return 'leather'
   if (item.id.includes('velvet')) return 'velvet'
   return 'cotton'
+}
+
+export function fabricPhysicsFor(item: Item): FabricPhysics {
+  return FABRIC_PHYSICS[fabricFor(item)]
 }
 
 function createFabricTexture(item: Item): THREE.CanvasTexture {
@@ -121,15 +146,67 @@ function createFabricMaterial(item: Item): THREE.MeshPhysicalMaterial {
   })
 }
 
-function garmentSurface(rings: Ring[], segments = 40): THREE.BufferGeometry {
+function bodyEnvelope(y: number): [radiusX: number, radiusZ: number] {
+  const points: Ring[] = [
+    [1.38, .205, .13],
+    [1.25, .255, .15],
+    [1.05, .19, .125],
+    [.94, .205, .14],
+    [.82, .245, .158],
+    [.66, .225, .145],
+    [.48, .19, .125],
+    [.28, .145, .105],
+    [.08, .11, .085],
+  ]
+  if (y >= points[0][0]) return [points[0][1], points[0][2]]
+  if (y <= points[points.length - 1][0]) return [points[points.length - 1][1], points[points.length - 1][2]]
+  for (let index = 0; index < points.length - 1; index++) {
+    const upper = points[index]
+    const lower = points[index + 1]
+    if (y <= upper[0] && y >= lower[0]) {
+      const t = (upper[0] - y) / (upper[0] - lower[0])
+      return [
+        THREE.MathUtils.lerp(upper[1], lower[1], t),
+        THREE.MathUtils.lerp(upper[2], lower[2], t),
+      ]
+    }
+  }
+  return [.18, .12]
+}
+
+function garmentSurface(rings: Ring[], item: Item, segments = 64): THREE.BufferGeometry {
   const vertices: number[] = []
   const uvs: number[] = []
   const indices: number[] = []
+  const physics = fabricPhysicsFor(item)
+  const lastRing = Math.max(1, rings.length - 1)
+  const phase = (item.id.length % 11) * .37
 
   rings.forEach(([y, rx, rz], ringIndex) => {
+    const progress = ringIndex / lastRing
+    const released = progress * progress * (3 - 2 * progress)
+    const [bodyX, bodyZ] = bodyEnvelope(y)
+    const collisionX = bodyX + physics.clearance
+    const collisionZ = bodyZ + physics.clearance
+
     for (let segment = 0; segment <= segments; segment++) {
       const angle = (segment / segments) * Math.PI * 2
-      vertices.push(Math.cos(angle) * rx, y, Math.sin(angle) * rz)
+      const primaryFold = Math.sin(angle * physics.foldCount + phase)
+      const secondaryFold = Math.sin(angle * (physics.foldCount + 3) - phase * .7) * .38
+      const fold = (primaryFold + secondaryFold) * physics.foldDepth * (.18 + released * .82)
+      const ease = physics.stretch * released * .018
+      const radiusX = Math.max(collisionX, rx + fold + ease)
+      const radiusZ = Math.max(collisionZ, rz + fold * .72 + ease * .55)
+
+      // Gravity pulls unsupported fabric down most strongly between folds and at the hem.
+      const unsupported = .55 + .45 * Math.abs(Math.cos(angle * physics.foldCount + phase))
+      const gravitySag = physics.weight * released * released * .014 * unsupported
+      const hemRipple = ringIndex === rings.length - 1
+        ? Math.sin(angle * physics.foldCount + phase) * physics.foldDepth * .16
+        : 0
+      const x = Math.cos(angle) * radiusX
+      const z = Math.sin(angle) * radiusZ
+      vertices.push(x, y - gravitySag + hemRipple, z)
       uvs.push(segment / segments, ringIndex / Math.max(1, rings.length - 1))
     }
   })
@@ -151,10 +228,11 @@ function garmentSurface(rings: Ring[], segments = 40): THREE.BufferGeometry {
 }
 
 function addSurface(group: THREE.Group, rings: Ring[], item: Item): THREE.Mesh {
-  const mesh = new THREE.Mesh(garmentSurface(rings), createFabricMaterial(item))
+  const mesh = new THREE.Mesh(garmentSurface(rings, item), createFabricMaterial(item))
   mesh.castShadow = true
   mesh.receiveShadow = true
   mesh.renderOrder = 3
+  mesh.userData.fabricPhysics = fabricPhysicsFor(item)
   group.add(mesh)
   return mesh
 }
@@ -180,18 +258,75 @@ function addCylinderBetween(
 }
 
 function addDressSkirt(group: THREE.Group, item: Item) {
-  const hem = item.tmpl === 'gown' ? .08 : item.tmpl === 'cocktail' ? .66 : item.tmpl === 'slip' ? .42 : .38
-  const flare = item.tmpl === 'gown' ? .39 : item.tmpl === 'cocktail' ? .31 : item.tmpl === 'slip' ? .28 : .33
-  const skirt = addSurface(group, [
-    [.99, .17, .12],
-    [.90, .205, .14],
-    [.78, .25, .16],
-    [Math.max(hem + .1, .54), item.tmpl === 'gown' ? .29 : flare * .96, item.tmpl === 'gown' ? .185 : .17],
-    [hem, flare, item.tmpl === 'gown' ? .23 : .18],
-  ], item)
+  let rings: Ring[]
+
+  if (item.id === 'midnight-gown') {
+    rings = [
+      [1.01, .185, .13],
+      [.92, .215, .145],
+      [.81, .25, .16],
+      [.66, .245, .158],
+      [.48, .265, .17],
+      [.27, .315, .20],
+      [.08, .37, .23],
+    ]
+  } else if (item.id === 'ivory-column') {
+    rings = [
+      [1.01, .185, .13],
+      [.92, .215, .145],
+      [.81, .25, .16],
+      [.66, .232, .15],
+      [.48, .21, .14],
+      [.27, .205, .138],
+      [.08, .225, .15],
+    ]
+  } else if (item.tmpl === 'cocktail') {
+    rings = [
+      [1.01, .185, .13],
+      [.91, .215, .145],
+      [.80, .25, .16],
+      [.69, .26, .17],
+      [.62, .285, .18],
+    ]
+  } else if (item.tmpl === 'slip') {
+    rings = [
+      [1.01, .18, .128],
+      [.91, .212, .143],
+      [.80, .248, .158],
+      [.65, .23, .148],
+      [.48, .22, .145],
+      [.31, .255, .165],
+    ]
+  } else {
+    rings = [
+      [1.01, .185, .13],
+      [.91, .215, .145],
+      [.80, .25, .16],
+      [.64, .245, .16],
+      [.46, .275, .175],
+      [.34, .31, .19],
+    ]
+  }
+
+  const skirt = addSurface(group, rings, item)
   const material = skirt.material as THREE.MeshPhysicalMaterial
   material.polygonOffset = true
   material.polygonOffsetFactor = -1
+}
+
+function addDressBodice(group: THREE.Group, item: Item) {
+  addSurface(group, [
+    [1.38, .205, .132],
+    [1.29, .245, .15],
+    [1.18, .25, .155],
+    [1.07, .205, .135],
+    [1.00, .185, .13],
+  ], item)
+
+  const material = createFabricMaterial(item)
+  const strapRadius = item.tmpl === 'slip' ? .009 : .013
+  addCylinderBetween(group, new THREE.Vector3(-.155, 1.365, .015), new THREE.Vector3(-.19, 1.48, -.002), strapRadius, strapRadius, material)
+  addCylinderBetween(group, new THREE.Vector3(.155, 1.365, .015), new THREE.Vector3(.19, 1.48, -.002), strapRadius, strapRadius, material)
 }
 
 function addCami(group: THREE.Group, item: Item) {
@@ -284,7 +419,12 @@ export function applyWardrobe(model: THREE.Object3D, equipped: Equipped): THREE.
 
   if (equipped.dress) {
     if (shorts) shorts.visible = false
-    if (shirt) replaceMeshMaterial(shirt, equipped.dress)
+    if (equipped.dress.tmpl === 'midi') {
+      if (shirt) replaceMeshMaterial(shirt, equipped.dress)
+    } else {
+      if (shirt) shirt.visible = false
+      addDressBodice(wardrobe, equipped.dress)
+    }
     addDressSkirt(wardrobe, equipped.dress)
   } else {
     if (equipped.top) {
