@@ -9,9 +9,9 @@ const top = ITEMS.find(i => i.name === 'White Tee')!
 const bottom = ITEMS.find(i => i.name === 'Straight Jeans')!
 
 describe('Figure', () => {
-  it('always renders the base body svg', () => {
+  it('always renders the 3D character canvas', () => {
     const { container } = render(<Figure equipped={{}} />)
-    expect(container.querySelector('svg')).toBeTruthy()
+    expect(container.querySelector('canvas')).toBeTruthy()
   })
 
   it('renders a dress layer when a dress is equipped', () => {
