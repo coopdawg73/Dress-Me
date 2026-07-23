@@ -33,22 +33,22 @@ export function Leaderboard({ board, currentScore, onSubmitted }: LeaderboardPro
   }
 
   return (
-    <div>
-      <p className="micro-label">Leaderboard</p>
+    <div className="leaderboard">
+      <p className="micro-label">The leaderboard</p>
       <ol>
         {entries.map((e, i) => (
-          <li key={i}><span>{e.name}</span> — <span>{e.score}</span></li>
+          <li key={i}><span className="rank">{i + 1}</span><span>{e.name}</span><strong>{e.score.toLocaleString()}</strong></li>
         ))}
       </ol>
       {currentScore !== undefined && !submitted && (
-        <div>
+        <div className="score-submit">
           <input
             placeholder="Your name"
             value={name}
             maxLength={20}
             onChange={(e) => setName(e.target.value)}
           />
-          <button onClick={handleSubmit}>Submit</button>
+          <button className="secondary-button" onClick={handleSubmit}>Submit</button>
           {error && <p style={{ color: 'var(--bad)' }}>{error}</p>}
         </div>
       )}

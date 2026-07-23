@@ -11,14 +11,16 @@ export function GameOverScreen() {
     : 'endless'
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '3rem 2rem', textAlign: 'center' }}>
+    <div className="game-over screen-enter">
+      <div className="remark-mark">remark<span>.</span></div>
       <p className="micro-label">Final Score</p>
-      <h1 className="display" style={{ fontSize: '3rem' }}>{totalScore}</h1>
+      <h1 className="display final-score">{totalScore}</h1>
+      <p className="final-line">{totalScore >= 3500 ? 'A season to remember.' : totalScore >= 2000 ? 'Nicely done — the room noticed.' : 'Every stylist starts somewhere.'}</p>
       <Leaderboard board={board} currentScore={totalScore} />
-      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
-        <button onClick={() => (mode === 'daily' ? startDaily() : startAtelier())}>Play Again</button>
-        <button onClick={exitToStart}>Home</button>
-        <button onClick={() => navigator.clipboard.writeText(buildChallengeLink(totalScore))}>Challenge a friend</button>
+      <div className="game-over-actions">
+        <button className="primary-button" onClick={() => (mode === 'daily' ? startDaily() : startAtelier())}>Play Again</button>
+        <button className="secondary-button" onClick={exitToStart}>Home</button>
+        <button className="text-button" onClick={() => navigator.clipboard.writeText(buildChallengeLink(totalScore))}>Challenge a friend ↗</button>
       </div>
     </div>
   )

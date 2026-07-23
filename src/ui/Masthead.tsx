@@ -11,21 +11,18 @@ type MastheadProps = {
 
 export function Masthead({ score, streak, roundLabel, livesOrLook, onExit }: MastheadProps) {
   return (
-    <header style={{
-      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '1rem 2rem', borderBottom: '1px solid var(--line)',
-    }}>
-      <div className="display" style={{ fontSize: '1.5rem' }}>
-        THE <span style={{ color: 'var(--gold)' }}>EDIT</span>
-        <div className="micro-label">Dress the Moment.</div>
+    <header className="masthead">
+      <div className="masthead-brand">
+        <div className="masthead-title">DRESS <em>ME</em></div>
+        <div className="masthead-by">by Remark</div>
       </div>
       {score !== undefined && (
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }} className="micro-label">
-          <span>Score {score}</span>
-          {streak !== undefined && streak > 0 && <span style={{ color: 'var(--gold)' }}>×{multiplierFor(streak).toFixed(2)}</span>}
+        <div className="masthead-meta">
+          <span className="score-chip">{score.toLocaleString()}</span>
+          {streak !== undefined && streak > 0 && <span className="streak-chip">×{multiplierFor(streak).toFixed(2)}</span>}
           {roundLabel && <span>{roundLabel}</span>}
-          {livesOrLook && <span>{livesOrLook}</span>}
-          {onExit && <button onClick={onExit}>Exit</button>}
+          {livesOrLook && <span className="lives-chip">{livesOrLook}</span>}
+          {onExit && <button className="text-button" onClick={onExit}>Exit</button>}
         </div>
       )}
     </header>

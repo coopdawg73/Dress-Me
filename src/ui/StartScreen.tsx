@@ -17,33 +17,36 @@ export function StartScreen({ onStartDaily, onStartAtelier }: StartScreenProps) 
   }, [])
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '3rem 2rem', textAlign: 'center' }}>
-      <h1 className="display" style={{ fontSize: '3rem' }}>
-        Style the <em>moment</em>.
+    <div className="start-screen screen-enter">
+      <div className="remark-mark">remark<span>.</span></div>
+      <p className="micro-label start-kicker">The personal styling challenge</p>
+      <h1 className="display start-title">
+        Dress <em>Me</em>
       </h1>
+      <p className="start-deck">Read the room. Build the look. Let Camille deliver the verdict.</p>
 
-      <div className="mode-cards" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '2rem' }}>
-        <section style={{ border: '1px solid var(--line)', padding: '1.5rem', borderRadius: 8, flex: 1 }}>
+      <div className="mode-cards">
+        <section className="mode-card mode-card-featured">
+          <span className="mode-number">01</span>
           <h2 className="display">The Daily Muse</h2>
-          <p className="micro-label">5 seeded briefs, same for everyone today</p>
-          <button onClick={onStartDaily}>Play the Daily Muse</button>
+          <p>Five briefs. One shared challenge. Make every look count.</p>
+          <button className="primary-button" onClick={onStartDaily}>Play the Daily Muse <span>→</span></button>
         </section>
-        <section style={{ border: '1px solid var(--line)', padding: '1.5rem', borderRadius: 8, flex: 1 }}>
+        <section className="mode-card">
+          <span className="mode-number">02</span>
           <h2 className="display">The Atelier</h2>
-          <p className="micro-label">Endless briefs, 3 lives, the clock tightens</p>
-          <button onClick={onStartAtelier}>Play the Atelier</button>
+          <p>Endless briefs. Three lives. A clock that keeps getting meaner.</p>
+          <button className="secondary-button" onClick={onStartAtelier}>Enter the Atelier <span>→</span></button>
         </section>
       </div>
 
-      <hr className="hairline" />
-
-      <ol style={{ textAlign: 'left', maxWidth: 480, margin: '0 auto' }}>
+      <ol className="how-to">
         <li>Read the brief — client, occasion, mood.</li>
         <li>Pull pieces from the closet to dress the figure.</li>
         <li>Present the look before the timer runs out.</li>
       </ol>
 
-      {bestLine && <p className="micro-label">{bestLine}</p>}
+      {bestLine && <p className="best-line">{bestLine}</p>}
     </div>
   )
 }

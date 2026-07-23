@@ -25,20 +25,32 @@ export function ResultSheet() {
   const isFinalRound = mode === 'daily' && briefIndex + 1 >= briefQueue.length
 
   return (
-    <div role="dialog" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="screen-enter" style={{ background: 'var(--panel)', padding: '2rem', maxWidth: 480, boxShadow: 'var(--shadow)' }}>
-        <h2 className="display" style={{ color: GRADE_COLOR[score.grade] }}>{score.grade}</h2>
-        <p style={{ fontStyle: 'italic' }}>— Camille: "{critiqueLine}"</p>
+    <div role="dialog" className="result-overlay">
+      <div className="result-sheet screen-enter">
+        <p className="micro-label result-kicker">The verdict</p>
+        <h2 className="display result-grade" style={{ color: GRADE_COLOR[score.grade] }}>{score.grade}</h2>
+        <div className="camille-note">
+          <span className="camille-avatar">C</span>
+          <div>
+            <strong>Camille · style advisor</strong>
+            <p>“{critiqueLine}”</p>
+          </div>
+        </div>
+        <div className="score-bars">
         {BARS.map(({ key, label, max }) => (
-          <div key={key} style={{ marginBottom: '0.5rem' }}>
-            <div className="micro-label">{label}</div>
-            <div style={{ height: 6, background: 'var(--panel2)', borderRadius: 3 }}>
-              <div style={{ width: `${(score[key] / max) * 100}%`, height: '100%', background: 'var(--gold)', transition: 'width 0.6s ease' }} />
+          <div key={key} className="score-bar">
+            <div><span>{label}</span><span>{Math.round(score[key])}</span></div>
+            <div className="score-track">
+              <div style={{ width: `${(score[key] / max) * 100}%` }} />
             </div>
           </div>
         ))}
-        <p className="display">Round score: {score.roundScore}</p>
-        <button onClick={nextRound}>{isFinalRound ? 'See Results' : 'Next Look →'}</button>
+        </div>
+        <div className="round-total">
+          <span>Round score</span>
+          <strong>+{score.roundScore.toLocaleString()}</strong>
+        </div>
+        <button className="primary-button result-next" onClick={nextRound}>{isFinalRound ? 'See Results →' : 'Next Look →'}</button>
       </div>
     </div>
   )

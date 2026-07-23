@@ -9,13 +9,22 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <main style={{ flex: 1 }}>
-        {screen === 'start' && <StartScreen onStartDaily={startDaily} onStartAtelier={startAtelier} />}
-        {(screen === 'playing' || screen === 'result') && <GameBoard />}
-        {screen === 'result' && <ResultSheet />}
-        {screen === 'gameover' && <GameOverScreen />}
+      <div className="ambient ambient-one" />
+      <div className="ambient ambient-two" />
+      <main className="phone-shell">
+        <div className="phone-status" aria-hidden="true">
+          <span>9:41</span>
+          <span className="phone-island" />
+          <span>●●●</span>
+        </div>
+        <div className="phone-screen">
+          {screen === 'start' && <StartScreen onStartDaily={startDaily} onStartAtelier={startAtelier} />}
+          {(screen === 'playing' || screen === 'result') && <GameBoard />}
+          {screen === 'result' && <ResultSheet />}
+          {screen === 'gameover' && <GameOverScreen />}
+        </div>
       </main>
-      <footer className="app-footer">by Remark</footer>
+      <footer className="app-footer">A styling game by <strong>Remark</strong></footer>
     </div>
   )
 }

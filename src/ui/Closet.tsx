@@ -5,6 +5,15 @@ import { itemsBySlot } from '../game/data/items'
 import { Thumb } from '../render/Thumb'
 
 const SLOTS: Slot[] = ['dress', 'top', 'bottom', 'outerwear', 'shoes', 'bag', 'jewelry']
+const SLOT_LABELS: Record<Slot, string> = {
+  dress: 'Dresses',
+  top: 'Tops',
+  bottom: 'Bottoms',
+  outerwear: 'Outerwear',
+  shoes: 'Shoes',
+  bag: 'Bags',
+  jewelry: 'Jewelry',
+}
 
 type ClosetProps = {
   equipped: Partial<Record<Slot, Item>>
@@ -27,37 +36,38 @@ export function Closet({ equipped, onEquip, onUnequip }: ClosetProps) {
   const hint = coverageHint(equipped)
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+    <section className="closet">
+      <div className="closet-tabs">
         {SLOTS.map((slot) => (
           <button
             key={slot}
             aria-pressed={activeSlot === slot}
             onClick={() => setActiveSlot(slot)}
-            style={{ fontWeight: equipped[slot] ? 'bold' : 'normal' }}
+            className={activeSlot === slot ? 'active' : ''}
           >
-            {slot}{equipped[slot] ? ' •' : ''}
+            {SLOT_LABELS[slot]}
+            {equipped[slot] && <span className="equipped-dot" />}
           </button>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.75rem', marginTop: '1rem' }}>
+      <div className="closet-grid">
         {itemsBySlot(activeSlot).map((it) => {
           const isEquipped = equipped[activeSlot]?.id === it.id
           return (
             <button
               key={it.id}
               onClick={() => isEquipped ? onUnequip(it.slot) : onEquip(it)}
-              style={{ border: isEquipped ? '1px solid var(--gold)' : '1px solid var(--line)', padding: '0.5rem', background: 'var(--panel)' }}
+              className={`closet-card ${isEquipped ? 'equipped' : ''}`}
             >
-              <div style={{ height: 70 }}><Thumb item={it} /></div>
-              <div className="micro-label">{it.name}{isEquipped ? ' ✓' : ''}</div>
+              <div className="closet-thumb"><Thumb item={it} /></div>
+              <div className="closet-name">{it.name}{isEquipped ? ' ✓' : ''}</div>
             </button>
           )
         })}
       </div>
 
-      {hint && <p className="micro-label" style={{ color: 'var(--bad)' }}>{hint}</p>}
-    </div>
+      {hint && <p className="coverage-hint">{hint}</p>}
+    </section>
   )
 }

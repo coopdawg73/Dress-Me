@@ -27,18 +27,18 @@ export function GameBoard() {
   const incomplete = coverageHint(equipped) !== null
 
   return (
-    <div>
+    <div className="game-screen">
       <Masthead score={totalScore} streak={streak} roundLabel={roundLabel} livesOrLook={livesOrLook} onExit={exitToStart} />
-      <div className="board-columns">
-        <div style={{ flex: 1, position: 'relative' }}>
+      <div className="game-content">
+        <BriefCard brief={brief} timeLeft={timeLeft} maxTime={maxTime} />
+        <div className="figure-wrap">
           <Figure equipped={equipped} />
-          <p className="micro-label" style={{ textAlign: 'center' }}>Styling {brief.name}.</p>
+          <p className="styling-label">Styling {brief.name}</p>
           {streak > 0 && <div key={streak} className="streak-flourish">×{multiplierFor(streak).toFixed(2)}</div>}
         </div>
-        <div style={{ flex: 1 }}>
-          <BriefCard brief={brief} timeLeft={timeLeft} maxTime={maxTime} />
+        <div className="closet-drawer">
           <Closet equipped={equipped} onEquip={equip} onUnequip={unequip} />
-          <button onClick={presentLook} disabled={incomplete}>Present the Look</button>
+          <button className="present-button" onClick={presentLook} disabled={incomplete}>Present the Look <span>→</span></button>
         </div>
       </div>
     </div>
